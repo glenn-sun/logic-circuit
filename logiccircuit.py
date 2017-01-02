@@ -16,4 +16,4 @@ class ConstFalse(Node):
 
 class And(Node):
 	def __init__(self, *args):
-		super(And, self).__init__(args)
+		super(And, self).__init__(*args)
