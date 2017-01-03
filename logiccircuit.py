@@ -1,5 +1,6 @@
 # Dependency list
 graph = {}
+variables = []
 
 # Base class for all nodes
 class Node(object):
@@ -23,6 +24,7 @@ class ConstFalse(Node):
 class Variable(Node):
 	def __init__(self):
 		super(Variable, self).__init__()
+		variables.append(self)
 
 	def eval(self, input_dict):
 		return input_dict[self]
@@ -61,3 +63,22 @@ def partial_eval(node, input_dict={}, return_result=False):
 		return result
 	else:
 		print result
+
+# Generate a full truth table
+def eval(node):
+	input_dict = {}
+	results = []
+	for i in range(2**len(variables)):
+		partial_result = ""
+		# Convert decimal to bits in reverse (000..., 100..., 010..., 110...)
+		for var in variables:
+			input_dict[var] = i % 2
+			partial_result += str(i % 2)
+			i /= 2
+
+		partial_result += '|' + str(int(node.eval(input_dict)))
+
+		results.append(partial_result)
+
+	for partial_result in sorted(results):
+		print partial_result
