@@ -56,6 +56,42 @@ class Not(Node):
 	def eval(self, input_dict):
 		return not graph[self][0].eval(input_dict)
 
+class Nand(Node):
+	def __init__(self, *args):
+		super(Nand, self).__init__(*args)
+
+	def eval(self, input_dict):
+		result = True # True and X = X
+		for node in graph[self]:
+			result = result and node.eval(input_dict)
+		return not result
+
+class Nor(Node):
+	def __init__(self, *args):
+		super(Nor, self).__init__(*args)
+	
+	def eval(self, input_dict):
+		result = False # False or X = X
+		for node in graph[self]:
+			result = result or node.eval(input_dict)
+		return not result
+
+class Xor(Node):
+	def __init__(self, *args):
+		super(Xor, self).__init__(*args)
+
+	def eval(self, input_dict):
+		sum_of_deps = sum([node.eval(input_dict) for node in graph[self]])
+		return bool(sum_of_deps % 2)
+
+class Xnor(Node):
+	def __init__(self, *args):
+		super(Xnor, self).__init__(*args)
+
+	def eval(self, input_dict):
+		sum_of_deps = sum([node.eval(input_dict) for node in graph[self]])
+		return not bool(sum_of_deps % 2)
+
 # Evalute for a certain variable
 def partial_eval(node, input_dict={}, return_result=False):
 	result = node.eval(input_dict)
