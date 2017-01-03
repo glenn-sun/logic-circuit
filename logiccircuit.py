@@ -25,10 +25,27 @@ class And(Node):
 		super(And, self).__init__(*args)
 
 	def eval(self):
-		result = True
+		result = True # True and X = X
 		for node in graph[self]:
 			result = result and node.eval()
 		return result
+
+class Or(Node):
+	def __init__(self, *args):
+		super(Or, self).__init__(*args)
+	
+	def eval(self):
+		result = False # False or X = X
+		for node in graph[self]:
+			result = result or node.eval()
+		return result
+
+class Not(Node):
+	def __init__(self, node):
+		super(Not, self).__init__(node)
+
+	def eval(self):
+		return not graph[self][0].eval()
 
 # Evalute for a certain variable
 def partial_eval(node, return_result=False):
