@@ -42,7 +42,7 @@ lc.partial_eval(C, input_dict={A: True, B: True})
 
 # Output:
 # True
-``
+```
 
 ### Advanced Usage
 You can define your own functional blocks from the existing selection of functional nodes. These blocks can then be used like any other functional node. For example, you can define a half adder like this:
@@ -65,14 +65,14 @@ with circuit1:
 	B = lc.Variable()
 	C = lc.And(A, B)
 
-circuit1.partial_eval(C, input_dict={A: True, B: True})
+circuit1.partial_eval(C, input_dict={A: True, B: False})
 
 with circuit2:
 	X = lc.Variable()
 	Y = lc.Variable()
 	Z = lc.Or(X, Y)
 
-circuit1.partial_eval(C, input_dict={A: True, B: True})
+circuit2.partial_eval(Z, input_dict={X: True, Y: False})
 ```
 
 ### To-Do
