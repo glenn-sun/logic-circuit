@@ -3,26 +3,24 @@ A Python module to simulate logical circuits/graphs.
 
 Inspired by the computational graph behind TensorFlow. Granted, it might be overkill but it *is* very powerful.
 
-The module builds a graph as variables are created. Then, the graph can be evaluated to obtain an output.
+The module builds graphs as variables are created. Then, the graphs can be evaluated to obtain an output.
 
-### Usage
+### Basic Usage
 Start by cloning or downloading the project, then import it into Python. Only Python 2.7 has been tested at the moment.
 
 ```python
 import logiccircuit as lc
 ```
 
-Then, build your circuit. In this example, Z = AB + C
+Then, build your circuit. In this example, C = A and B
 
 ```python
 A = lc.Variable()
 B = lc.Variable()
-C = lc.Variable()
-M = lc.And(A, B)
-Z = lc.Or(M, C)
+C = lc.And(A, B)
 ```
 
-Currently the following gates are availiable:
+Currently the following functional nodes are availiable:
 
 Name | # of Arguments
 --- | ---
@@ -32,32 +30,53 @@ Variable | 0
 And | 2 or more
 Or | 2 or more
 Not | 1
+Nand | 2 or more
+Nor | 2 or more
+Xor | 2 or more
+Xnor | 2 or more
 
-There are two ways to evaluate a circuit: `partial_eval` and `eval`. `partial_eval` evaulates the circuit for a specific set of inputs, while `eval` generates a full truth table. Input variables in the truth table are in the order they were defined.
+To evaluate a circuit for a node with certain inputs to the variables, use `partial_eval`.
 
 ```python
-lc.partial_eval(Z, input_dict={A: True, B: True, C: False})
+lc.partial_eval(C, input_dict={A: True, B: True})
 
 # Output:
 # True
+``
 
-lc.eval(Z)
+### Advanced Usage
+You can define your own functional blocks from the existing selection of functional nodes. These blocks can then be used like any other functional node. For example, you can define a half adder like this:
 
-# Output:
-# 000|0
-# 001|1
-# 010|0
-# 011|1
-# 100|0
-# 101|1
-# 110|1
-# 111|1
+```python
+def HalfAdder(A, B):
+	S = lc.Xor(A, B)
+	C = lc.And(A, B)
+	return S, C
+```
+
+If you want to separate your circuits into completely different graphs, you can explicity create a graph and use it when adding nodes. Then evaluate with respect to a graph. For example:
+
+```python
+circuit1 = lc.Graph()
+circuit2 = lc.Graph()
+
+with circuit1:
+	A = lc.Variable()
+	B = lc.Variable()
+	C = lc.And(A, B)
+
+circuit1.partial_eval(C, input_dict={A: True, B: True})
+
+with circuit2:
+	X = lc.Variable()
+	Y = lc.Variable()
+	Z = lc.Or(X, Y)
+
+circuit1.partial_eval(C, input_dict={A: True, B: True})
 ```
 
 ### To-Do
-* Implement the rest of the basic gates (NAND, NOR, XOR, XNOR)
 * Implement many MSI (medium-scale integration) circuits
 * Allow evaluating for more than one output at a time
 * Add more descriptive error messages
 * Ensure compatibility with Python 3.x
-* Allow the creation of multiple graphs/circuits
