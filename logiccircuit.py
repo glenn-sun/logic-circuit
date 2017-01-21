@@ -1,5 +1,6 @@
 # Dependency list
-graph = {}
+default_graph = {}
+graph = default_graph
 variables = []
 
 # Base class for all nodes
@@ -100,6 +101,16 @@ def partial_eval(node, input_dict={}, return_result=False):
 	else:
 		print result
 
+class Graph(object):
+	def __init__(self):
+		self.graph = {}
+
+	def __enter__(self):
+		graph = self.graph
+
+	def __exit__(self, type, value, traceback):
+		graph = default_graph
+		
 # Generate a full truth table
 def eval(node):
 	input_dict = {}
