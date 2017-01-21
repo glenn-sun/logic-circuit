@@ -1,61 +1,61 @@
 class Graph(object):
 	def __init__(self):
-		self.graph = {}
+		self._graph = {}
 
 	def __enter__(self):
-		global graph
-		graph = self.graph
+		global _graph
+		_graph = self._graph
 
 	def __exit__(self, type, value, traceback):
-		global graph
-		graph = default_graph
+		global _graph
+		_graph = _default_graph
 	
 	def __getitem__(self, key):
-		return self.graph[key]
+		return self._graph[key]
 
 	def __setitem__(self, key, item):
-		self.graph[key] = item
+		self._graph[key] = item
 
 	def partial_eval(self, node, input_dict={}, return_result=False):
-		result = node.eval(self.graph, input_dict)
+		result = node.eval(self._graph, input_dict)
 		if return_result:
 			return result
 		else:
 			print result
 
 # Dependency list
-default_graph = Graph()
-graph = default_graph
-variables = []
+_default_graph = Graph()
+_graph = _default_graph
+_variables = []
 
 # Base class for all nodes
-class Node(object):
+class _Node(object):
 	def __init__(self, *args):
-		graph[self] = args
+		_graph[self] = args
 
-class ConstTrue(Node):
+class ConstTrue(_Node):
 	def __init__(self):
 		super(ConstTrue, self).__init__()
 
 	def eval(self, graph, input_dict):
 		return True
 
-class ConstFalse(Node):
+class ConstFalse(_Node):
 	def __init__(self):
 		super(ConstFalse, self).__init__()
 
 	def eval(self, graph, input_dict):
 		return False
 
-class Variable(Node):
+class Variable(_Node):
 	def __init__(self):
 		super(Variable, self).__init__()
-		variables.append(self)
+		_variables.append(self)
 
 	def eval(self, graph, input_dict):
 		return input_dict[self]
 
-class And(Node):
+class And(_Node):
 	def __init__(self, *args):
 		super(And, self).__init__(*args)
 
@@ -65,7 +65,7 @@ class And(Node):
 			result = result and node.eval(graph, input_dict)
 		return result
 
-class Or(Node):
+class Or(_Node):
 	def __init__(self, *args):
 		super(Or, self).__init__(*args)
 	
@@ -75,14 +75,14 @@ class Or(Node):
 			result = result or node.eval(graph, input_dict)
 		return result
 
-class Not(Node):
+class Not(_Node):
 	def __init__(self, node):
 		super(Not, self).__init__(node)
 
 	def eval(self, graph, input_dict):
 		return not graph[self][0].eval(graph, input_dict)
 
-class Nand(Node):
+class Nand(_Node):
 	def __init__(self, *args):
 		super(Nand, self).__init__(*args)
 
@@ -92,7 +92,7 @@ class Nand(Node):
 			result = result and node.eval(graph, input_dict)
 		return not result
 
-class Nor(Node):
+class Nor(_Node):
 	def __init__(self, *args):
 		super(Nor, self).__init__(*args)
 	
@@ -102,7 +102,7 @@ class Nor(Node):
 			result = result or node.eval(graph, input_dict)
 		return not result
 
-class Xor(Node):
+class Xor(_Node):
 	def __init__(self, *args):
 		super(Xor, self).__init__(*args)
 
@@ -110,7 +110,7 @@ class Xor(Node):
 		sum_of_deps = sum([node.eval(graph, input_dict) for node in graph[self]])
 		return bool(sum_of_deps % 2)
 
-class Xnor(Node):
+class Xnor(_Node):
 	def __init__(self, *args):
 		super(Xnor, self).__init__(*args)
 
@@ -120,7 +120,7 @@ class Xnor(Node):
 
 # Evalute for a certain variable
 def partial_eval(node, input_dict={}, return_result=False):
-	return graph.partial_eval(node, input_dict=input_dict, return_result=return_result)
+	return _graph.partial_eval(node, input_dict=input_dict, return_result=return_result)
 
 # Generate a full truth table
 # def eval(node):
