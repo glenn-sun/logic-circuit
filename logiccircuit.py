@@ -235,7 +235,8 @@ class Nor(_Node):
 class Xor(_Node):
 	"""Perform a logical XOR function.
 	
-	In the case that more than 2 dependencies are passed, this node generates an even parity bit.
+	In the case that more than 2 dependencies are passed, this node generates 
+	an even parity bit.
 
 	Dependencies:
 		*args: A tuple of nodes.
@@ -274,4 +275,5 @@ def partial_eval(node, input_dict={}, return_result=False):
 	"""Call partial_eval on the current graph.
 
 	See Graph.partial_eval for implentation details."""
-	return _graph.partial_eval(node, input_dict=input_dict, return_result=return_result)
+	return _graph.partial_eval(node, input_dict=input_dict, return_result=
+		return_result)
