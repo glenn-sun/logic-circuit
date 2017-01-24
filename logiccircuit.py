@@ -52,9 +52,12 @@ class Graph(object):
 		return_result=False):
 		"""Evaluate a node with certain inputs.
 
-		Recursively walks the graph and computes each node along the way. The inputs are passed along so that they can be used whenever a Variable needs to be evaluated.
+		Recursively walks the graph and computes each node along the way. The 
+		inputs are passed along so that they can be used whenever a Variable 
+		needs to be evaluated.
 
-		The values of the input_dict are first converted to boolean values before being passed along.
+		The values of the input_dict are first converted to boolean values 
+		before being passed along.
 
 		Args:
 			node: The node to evaluate.
@@ -244,13 +247,14 @@ class Xor(_Node):
 		super(Xor, self).__init__(*args)
 
 	def eval(self, graph, input_dict):
-		sum_of_deps = sum([node.eval(graph, input_dict) for node in graph[self]])
-		return bool(sum_of_deps % 2)
+		dep_sum = sum([node.eval(graph, input_dict) for node in graph[self]])
+		return bool(dep_sum % 2)
 
 class Xnor(_Node):
 	"""Perform a logical XNOR function.
 	
-	In the case that more than 2 dependencies are passed, this node generates an odd parity bit.
+	In the case that more than 2 dependencies are passed, this node generates
+	an odd parity bit.
 
 	Dependencies:
 		*args: A tuple of nodes.
@@ -263,8 +267,8 @@ class Xnor(_Node):
 		super(Xnor, self).__init__(*args)
 
 	def eval(self, graph, input_dict):
-		sum_of_deps = sum([node.eval(graph, input_dict) for node in graph[self]])
-		return not bool(sum_of_deps % 2)
+		dep_sum = sum([node.eval(graph, input_dict) for node in graph[self]])
+		return not bool(dep_sum % 2)
 
 def partial_eval(node, input_dict={}, return_result=False):
 	"""Call partial_eval on the current graph.
