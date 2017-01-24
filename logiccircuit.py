@@ -83,17 +83,32 @@ class Graph(object):
 		if return_result:
 			return result
 
-# Dependency list
+
+# The default graph is used when nodes are created outside a with-statement.
 _default_graph = Graph()
 _graph = _default_graph
-_variables = []
 
-# Base class for all nodes
+
 class _Node(object):
+	"""The base class for all nodes.
+
+	Sets the dependencies of a node.
+
+	Args:
+		*args: A tuple of dependencies
+
+	Raises:
+		TypeError: The dependencies are not derived from _Node.
+	"""
 	def __init__(self, *args):
 		_graph[self] = args
 
 class ConstTrue(_Node):
+	"""Return True.
+
+	Dependencies:
+		None
+	"""
 	def __init__(self):
 		super(ConstTrue, self).__init__()
 
@@ -101,6 +116,11 @@ class ConstTrue(_Node):
 		return True
 
 class ConstFalse(_Node):
+	"""Return False.
+
+	Dependencies:
+		None
+	"""
 	def __init__(self):
 		super(ConstFalse, self).__init__()
 
@@ -108,14 +128,29 @@ class ConstFalse(_Node):
 		return False
 
 class Variable(_Node):
+	"""Return the value assigned to this node.
+
+	Dependencies:
+		None
+
+	Raises:
+		KeyError: No value assigned to this node.
+	"""
 	def __init__(self):
 		super(Variable, self).__init__()
-		_variables.append(self)
 
 	def eval(self, graph, input_dict):
 		return input_dict[self]
 
 class And(_Node):
+	"""Perform a logical AND function.
+
+	Dependencies:
+		*args: A tuple of nodes.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
 	def __init__(self, *args):
 		super(And, self).__init__(*args)
 
@@ -126,6 +161,14 @@ class And(_Node):
 		return result
 
 class Or(_Node):
+	"""Perform a logical OR function.
+
+	Dependencies:
+		*args: A tuple of nodes.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
 	def __init__(self, *args):
 		super(Or, self).__init__(*args)
 	
@@ -136,6 +179,14 @@ class Or(_Node):
 		return result
 
 class Not(_Node):
+	"""Perform a logical NOT function.
+
+	Dependencies:
+		node: A node.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
 	def __init__(self, node):
 		super(Not, self).__init__(node)
 
@@ -143,6 +194,14 @@ class Not(_Node):
 		return not graph[self][0].eval(graph, input_dict)
 
 class Nand(_Node):
+	"""Perform a logical NAND function.
+
+	Dependencies:
+		*args: A tuple of nodes.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
 	def __init__(self, *args):
 		super(Nand, self).__init__(*args)
 
@@ -153,6 +212,14 @@ class Nand(_Node):
 		return not result
 
 class Nor(_Node):
+	"""Perform a logical NOR function.
+
+	Dependencies:
+		*args: A tuple of nodes.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
 	def __init__(self, *args):
 		super(Nor, self).__init__(*args)
 	
@@ -163,6 +230,16 @@ class Nor(_Node):
 		return not result
 
 class Xor(_Node):
+	"""Perform a logical XOR function.
+	
+	In the case that more than 2 dependencies are passed, this node generates an even parity bit.
+
+	Dependencies:
+		*args: A tuple of nodes.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
 	def __init__(self, *args):
 		super(Xor, self).__init__(*args)
 
@@ -171,6 +248,17 @@ class Xor(_Node):
 		return bool(sum_of_deps % 2)
 
 class Xnor(_Node):
+	"""Perform a logical XNOR function.
+	
+	In the case that more than 2 dependencies are passed, this node generates an odd parity bit.
+
+	Dependencies:
+		*args: A tuple of nodes.
+
+	Returns:
+		KeyError: This node is not in the current graph.
+	"""
+
 	def __init__(self, *args):
 		super(Xnor, self).__init__(*args)
 
@@ -179,24 +267,7 @@ class Xnor(_Node):
 		return not bool(sum_of_deps % 2)
 
 def partial_eval(node, input_dict={}, return_result=False):
-	'''Call partial_eval on the current graph instead.'''
-	return _graph.partial_eval(node, input_dict=input_dict, return_result=return_result)
+	"""Call partial_eval on the current graph.
 
-# Generate a full truth table
-# def eval(node):
-# 	input_dict = {}
-# 	results = []
-# 	for i in range(2**len(variables)):
-# 		partial_result = ""
-# 		# Convert decimal to bits in reverse (000..., 100..., 010..., 110...)
-# 		for var in variables:
-# 			input_dict[var] = i % 2
-# 			partial_result += str(i % 2)
-# 			i /= 2
-# 			
-# 		partial_result += '|' + str(int(node.eval(input_dict)))
-# 		
-# 		results.append(partial_result)
-# 		
-# 	for partial_result in sorted(results):
-# 		print partial_result
+	See Graph.partial_eval for implentation details."""
+	return _graph.partial_eval(node, input_dict=input_dict, return_result=return_result)
