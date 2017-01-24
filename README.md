@@ -76,7 +76,7 @@ circuit2.partial_eval(Z, input_dict={X: True, Y: False})
 ```
 
 ### To-Do
-* Implement many MSI (medium-scale integration) circuits
+* Implement efficient medium-scale integration circuits
 * Allow evaluating for more than one output at a time
-* Add more descriptive error messages
+* Automate the process of evaluating every possible input
 * Ensure compatibility with Python 3.x
