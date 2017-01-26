@@ -44,6 +44,8 @@ lc.partial_eval(C, input_dict={A: True, B: True})
 # True
 ```
 
+Pass a list of nodes instead of a single node to evaluate multiple nodes at once.
+
 ### Advanced Usage
 You can define your own functional blocks from the existing selection of functional nodes. These blocks can then be used like any other functional node. For example, you can define a half adder like this:
 
@@ -67,16 +69,22 @@ with circuit1:
 
 circuit1.partial_eval(C, input_dict={A: True, B: False})
 
+# Output:
+# False
+
 with circuit2:
 	X = lc.Variable()
 	Y = lc.Variable()
 	Z = lc.Or(X, Y)
 
 circuit2.partial_eval(Z, input_dict={X: True, Y: False})
+
+# Output:
+# True
 ```
 
 ### To-Do
 * Implement efficient medium-scale integration circuits
-* Allow evaluating for more than one output at a time
 * Automate the process of evaluating every possible input
+* Add memoization for more efficient computation
 * Ensure compatibility with Python 3.x
