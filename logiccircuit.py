@@ -48,7 +48,7 @@ class Graph(object):
 
 		self._graph[key] = items
 
-	def partial_eval(self, node, input_dict={}, print_result=True, 
+	def partial_eval(self, nodes, input_dict={}, print_result=True, 
 		return_result=False):
 		"""Evaluate a node with certain inputs.
 
@@ -60,7 +60,8 @@ class Graph(object):
 		before being passed along.
 
 		Args:
-			node: The node to evaluate.
+			nodes: A list of nodes to evaluate. If only one node is required, 
+				it's not necessary to enclose in a list.
 			input_dict: A dictionary with Variable objects as keys and bools 
 				as values.
 			print_result: A bool to decide if the result should be printed.
@@ -72,15 +73,23 @@ class Graph(object):
 		Raises:
 			KeyError: Required Variable not found in input_dict, OR requested 
 				node not in graph.
-			AttributeError: Requested node not derived from _Node.
+			AttributeError: Requested nodes not derived from _Node.
 		"""
-
-		if not node in self._graph:
-			raise KeyError(node)
 
 		input_dict = {k: bool(v) for k, v in input_dict.iteritems()}
 
-		result = node.eval(self._graph, input_dict)
+		result = None
+		
+		if isinstance(nodes, list):
+			for node in nodes:
+				if not node in self._graph:
+					raise KeyError(node)
+			result = [node.eval(self._graph, input_dict) for node in nodes]
+		else:
+			if not nodes in self._graph:
+				raise KeyError(nodes)
+			result = nodes.eval(self._graph, input_dict)
+
 		if print_result:
 			print result
 		if return_result:
@@ -271,9 +280,9 @@ class Xnor(_Node):
 		dep_sum = sum([node.eval(graph, input_dict) for node in graph[self]])
 		return not bool(dep_sum % 2)
 
-def partial_eval(node, input_dict={}, return_result=False):
+def partial_eval(nodes, input_dict={}, return_result=False):
 	"""Call partial_eval on the current graph.
 
 	See Graph.partial_eval for implentation details."""
-	return _graph.partial_eval(node, input_dict=input_dict, return_result=
+	return _graph.partial_eval(nodes, input_dict=input_dict, return_result=
 		return_result)
